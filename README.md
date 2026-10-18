@@ -1,6 +1,11 @@
 # Grainfall
 
 [![CI](https://github.com/shivamsingh262/grainfall/actions/workflows/ci.yml/badge.svg)](https://github.com/shivamsingh262/grainfall/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/shivamsingh262/grainfall)](LICENSE)
+![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white)
+[![raylib 5.5](https://img.shields.io/badge/raylib-5.5-black)](https://www.raylib.com/)
+![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
 A small falling-sand sandbox written in C++20 with [raylib](https://www.raylib.com/).
 Pour sand, flood it with water, build stone walls, and set wooden forests on fire.
