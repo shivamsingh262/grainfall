@@ -1,5 +1,7 @@
 #include "grid.h"
 
+#include <algorithm>
+#include <cstdlib>
 #include <utility>
 
 Grid::Grid(int width, int height)
@@ -21,6 +23,19 @@ void Grid::paintCircle(int cx, int cy, int radius, ElementId type) {
             if (dx * dx + dy * dy > radius * radius) continue;
             if (type == ElementId::Empty || isEmpty(cx + dx, cy + dy)) set(cx + dx, cy + dy, type);
         }
+    }
+}
+
+void Grid::paintLine(int x0, int y0, int x1, int y1, int radius, ElementId type) {
+    // Stamp often enough that consecutive circles overlap: every cell for small
+    // brushes, every radius/2 cells for big ones.
+    const int length = std::max(std::abs(x1 - x0), std::abs(y1 - y0));
+    const int spacing = std::max(1, radius / 2);
+    const int stamps = std::max(1, length / spacing);
+    for (int i = 0; i <= stamps; ++i) {
+        const int x = x0 + (x1 - x0) * i / stamps;
+        const int y = y0 + (y1 - y0) * i / stamps;
+        paintCircle(x, y, radius, type);
     }
 }
 

@@ -33,6 +33,7 @@ struct ElementDef {
     const char* name = "";
     Color color = {255, 0, 255, 255};  // base color
     uint8_t colorJitter = 0;           // max brightness variation per particle (0 = flat color)
+    bool flickers = false;             // re-roll the variation every frame instead of once at spawn
     Movement movement = Movement::None;
     uint8_t density = 0;     // a moving element can push aside liquids/gases lighter than itself
     uint8_t dispersion = 0;  // liquids/gases: max cells moved sideways per frame

@@ -27,6 +27,8 @@ public:
     void set(int x, int y, ElementId type);
     // Paints a filled circle of `type` into empty cells. Painting Empty erases.
     void paintCircle(int cx, int cy, int radius, ElementId type);
+    // Paints circles along the segment between two points, so fast strokes stay solid.
+    void paintLine(int x0, int y0, int x1, int y1, int radius, ElementId type);
     void clear();
 
     // Advances the simulation by one tick.

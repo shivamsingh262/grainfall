@@ -28,6 +28,8 @@ int main() {
         Grid grid(kGridWidth, kGridHeight);
         Renderer renderer(grid);
         UiState ui;
+        bool stroking = false;  // true while a paint/erase stroke is in progress
+        int lastX = 0, lastY = 0;  // grid position painted last frame, to connect fast strokes
 
         while (!WindowShouldClose()) {
             handleUiInput(ui, grid);
@@ -38,7 +40,16 @@ int main() {
             if ((painting || erasing) && !isMouseOverUi()) {
                 int x = 0, y = 0;
                 mouseToGrid(grid, x, y);
-                grid.paintCircle(x, y, ui.brushRadius, erasing ? ElementId::Empty : ui.selected);
+                if (!stroking) {  // new stroke: start the line at the current position
+                    lastX = x;
+                    lastY = y;
+                }
+                grid.paintLine(lastX, lastY, x, y, ui.brushRadius, erasing ? ElementId::Empty : ui.selected);
+                lastX = x;
+                lastY = y;
+                stroking = true;
+            } else {
+                stroking = false;
             }
 
             if (!ui.paused) grid.step();

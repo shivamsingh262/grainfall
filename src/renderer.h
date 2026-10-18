@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 #include "raylib.h"
@@ -18,6 +19,9 @@ public:
     void draw(const Grid& grid, Rectangle dest);
 
 private:
+    Color cellColor(const Grid& grid, int x, int y) const;
+
     Texture2D texture_{};
+    uint32_t frame_ = 0;  // drives flicker
     std::vector<Color> pixels_;
 };
