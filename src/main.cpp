@@ -17,11 +17,14 @@ void mouseToGrid(const Grid& grid, int& outX, int& outY) {
     outY = static_cast<int>(mouse.y * grid.height() / GetScreenHeight());
 }
 
-// Temporary key bindings until the UI milestone: 1-3 pick an element, 0 picks the eraser.
+// Temporary key bindings until the UI milestone: 1-6 pick an element, 0 picks the eraser.
 void handleElementKeys(ElementId& selected) {
     if (IsKeyPressed(KEY_ONE)) selected = ElementId::Sand;
     if (IsKeyPressed(KEY_TWO)) selected = ElementId::Water;
     if (IsKeyPressed(KEY_THREE)) selected = ElementId::Stone;
+    if (IsKeyPressed(KEY_FOUR)) selected = ElementId::Wood;
+    if (IsKeyPressed(KEY_FIVE)) selected = ElementId::Fire;
+    if (IsKeyPressed(KEY_SIX)) selected = ElementId::Smoke;
     if (IsKeyPressed(KEY_ZERO)) selected = ElementId::Empty;
 }
 

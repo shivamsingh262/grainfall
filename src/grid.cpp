@@ -10,7 +10,8 @@ void Grid::set(int x, int y, ElementId type) {
     Cell& c = cell(x, y);
     c.type = type;
     c.shade = static_cast<uint8_t>(random());
-    c.life = 0;
+    const ElementDef& def = elementDef(type);
+    c.life = def.lifetimeMax == 0 ? 0 : static_cast<uint8_t>(def.lifetimeMin + random() % (def.lifetimeMax - def.lifetimeMin + 1));
     c.lastUpdate = frame_;
 }
 
@@ -41,27 +42,36 @@ void Grid::step() {
             // won't be processed again if it lands in a row we haven't scanned yet.
             c.lastUpdate = frame_;
 
+            // If the particle burned out or was extinguished, the new one waits until next frame.
+            if (updateLifetime(x, y)) continue;
+            if (elementDef(c.type).ignites && updateBurning(x, y)) continue;
+            updateEmission(x, y);
+
             switch (elementDef(c.type).movement) {
                 case Movement::None: break;
                 case Movement::Powder: updatePowder(x, y); break;
                 case Movement::Liquid: updateLiquid(x, y); break;
+                case Movement::Gas: updateGas(x, y); break;
             }
         }
     }
 }
 
 // A particle can move into empty space, or swap places with a lighter liquid
-// (so sand sinks through water). Solids never get pushed around.
+// or gas (so sand sinks through water and falls through smoke). Solids never
+// get pushed around, and gases only rise into empty space.
 bool Grid::canMoveInto(ElementId mover, int toX, int toY) const {
     if (!inBounds(toX, toY)) return false;
     const Cell& target = at(toX, toY);
     if (target.type == ElementId::Empty) return true;
+    if (elementDef(mover).movement == Movement::Gas) return false;
     // A particle can be pushed aside only once per frame. Otherwise a falling
     // stream of sand would hand the same water cell upward grain by grain,
     // carrying it to the top of the stream in a single frame.
     if (target.lastDisplaced == frame_) return false;
     const ElementDef& targetDef = elementDef(target.type);
-    return targetDef.movement == Movement::Liquid && elementDef(mover).density > targetDef.density;
+    const bool fluid = targetDef.movement == Movement::Liquid || targetDef.movement == Movement::Gas;
+    return fluid && elementDef(mover).density > targetDef.density;
 }
 
 // Moves the particle at (x, y) to (toX, toY); whatever was there takes its place.
@@ -88,6 +98,47 @@ bool Grid::tryFlowSideways(int x, int y, int dir, int reach) {
     return true;
 }
 
+// Transient elements (fire, smoke) count down their life and turn into their
+// decay product at zero. Returns true if the particle decayed.
+bool Grid::updateLifetime(int x, int y) {
+    Cell& c = cell(x, y);
+    const ElementDef& def = elementDef(c.type);
+    if (def.lifetimeMax == 0) return false;
+    if (c.life > 0) {
+        --c.life;
+        return false;
+    }
+    set(x, y, def.decaysInto);
+    return true;
+}
+
+// Burning cells check their 8 neighbors: an extinguishing neighbor (water)
+// puts them out, otherwise each flammable neighbor may catch fire.
+// Returns true if this cell was put out.
+bool Grid::updateBurning(int x, int y) {
+    for (int dy = -1; dy <= 1; ++dy) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            const int nx = x + dx, ny = y + dy;
+            if ((dx == 0 && dy == 0) || !inBounds(nx, ny)) continue;
+            const ElementDef& neighbor = elementDef(at(nx, ny).type);
+            if (neighbor.extinguishes) {
+                set(x, y, elementDef(at(x, y).type).decaysInto);
+                return true;
+            }
+            if (neighbor.flammability > 0 && chance(neighbor.flammability)) set(nx, ny, neighbor.burnsInto);
+        }
+    }
+    return false;
+}
+
+// Emitters (embers) occasionally spawn a particle (fire) just above themselves.
+void Grid::updateEmission(int x, int y) {
+    const ElementDef& def = elementDef(at(x, y).type);
+    if (def.emitChance == 0 || !chance(def.emitChance)) return;
+    const int ex = x + static_cast<int>(random() % 3) - 1;
+    if (isEmpty(ex, y - 1)) set(ex, y - 1, def.emits);
+}
+
 // Powder: fall straight down; if blocked, slide down-left or down-right
 // (random side first). This is what makes sand form sloped piles.
 void Grid::updatePowder(int x, int y) {
@@ -104,6 +155,20 @@ void Grid::updateLiquid(int x, int y) {
     const int dir = coinFlip() ? 1 : -1;
     if (tryMove(x, y, x + dir, y + 1)) return;
     if (tryMove(x, y, x - dir, y + 1)) return;
+    const int reach = elementDef(at(x, y).type).dispersion;
+    if (tryFlowSideways(x, y, dir, reach)) return;
+    tryFlowSideways(x, y, -dir, reach);
+}
+
+// Gas: rise (with a random sideways wobble so it flickers and billows), and
+// drift sideways when blocked so smoke spreads along ceilings.
+void Grid::updateGas(int x, int y) {
+    const int wobble = static_cast<int>(random() % 3) - 1;
+    if (tryMove(x, y, x + wobble, y - 1)) return;
+    if (tryMove(x, y, x, y - 1)) return;
+    const int dir = coinFlip() ? 1 : -1;
+    if (tryMove(x, y, x + dir, y - 1)) return;
+    if (tryMove(x, y, x - dir, y - 1)) return;
     const int reach = elementDef(at(x, y).type).dispersion;
     if (tryFlowSideways(x, y, dir, reach)) return;
     tryFlowSideways(x, y, -dir, reach);

@@ -40,11 +40,16 @@ private:
     bool tryMove(int x, int y, int toX, int toY);
     bool tryFlowSideways(int x, int y, int dir, int reach);
 
+    bool updateLifetime(int x, int y);
+    bool updateBurning(int x, int y);
+    void updateEmission(int x, int y);
     void updatePowder(int x, int y);
     void updateLiquid(int x, int y);
+    void updateGas(int x, int y);
 
     uint32_t random();
     bool coinFlip() { return random() & 1u; }
+    bool chance(uint8_t outOf256) { return (random() & 0xFFu) < outOf256; }
 
     int width_;
     int height_;
