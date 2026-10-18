@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(falling_sand LANGUAGES C CXX)
+project(grainfall LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,17 +22,17 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(raylib)
 
 # --- sandbox executable ---
-add_executable(falling_sand
+add_executable(grainfall
     src/main.cpp
     src/elements.cpp
     src/grid.cpp
     src/renderer.cpp
     src/ui.cpp
 )
-target_link_libraries(falling_sand PRIVATE raylib)
+target_link_libraries(grainfall PRIVATE raylib)
 
 if(MSVC)
-    target_compile_options(falling_sand PRIVATE /W4)
+    target_compile_options(grainfall PRIVATE /W4)
 else()
-    target_compile_options(falling_sand PRIVATE -Wall -Wextra)
+    target_compile_options(grainfall PRIVATE -Wall -Wextra)
 endif()

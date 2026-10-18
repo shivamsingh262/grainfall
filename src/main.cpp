@@ -21,7 +21,7 @@ void mouseToGrid(const Grid& grid, int& outX, int& outY) {
 
 int main() {
     SetConfigFlags(FLAG_VSYNC_HINT);
-    InitWindow(kGridWidth * kPixelScale, kGridHeight * kPixelScale, "Falling Sand");
+    InitWindow(kGridWidth * kPixelScale, kGridHeight * kPixelScale, "Grainfall");
     SetTargetFPS(60);
 
     {  // scope so the Renderer releases its texture before the window closes

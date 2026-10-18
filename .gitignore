@@ -1,1 +1,24 @@
+# Build output
 build/
+build-*/
+cmake-build-*/
+out/
+
+# CMake
+CMakeUserPresets.json
+compile_commands.json
+
+# Editors and IDEs
+.vscode/
+.idea/
+.vs/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# raylib's TakeScreenshot() default output
+screenshot*.png
+!docs/screenshot.png
