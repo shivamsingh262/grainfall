@@ -9,7 +9,8 @@ struct Cell {
     ElementId type = ElementId::Empty;
     uint8_t shade = 0;       // random per-particle color variation, rolled on spawn
     uint8_t life = 0;        // remaining lifetime for transient elements
-    uint8_t lastUpdate = 0;  // frame stamp; equals the current frame once this cell has been updated
+    uint8_t lastUpdate = 0;     // frame stamp; equals the current frame once this cell has been updated
+    uint8_t lastDisplaced = 0;  // frame stamp; set when a heavier particle pushes this one aside
 };
 
 // Fixed-size cellular automaton. Owns the cells and advances the simulation.
@@ -24,7 +25,7 @@ public:
 
     // Spawns a fresh particle (overwrites whatever is there).
     void set(int x, int y, ElementId type);
-    // Paints a filled circle of `type` into empty cells.
+    // Paints a filled circle of `type` into empty cells. Painting Empty erases.
     void paintCircle(int cx, int cy, int radius, ElementId type);
     void clear();
 
@@ -34,9 +35,13 @@ public:
 private:
     Cell& cell(int x, int y) { return cells_[y * width_ + x]; }
     bool isEmpty(int x, int y) const { return inBounds(x, y) && at(x, y).type == ElementId::Empty; }
+    bool canMoveInto(ElementId mover, int toX, int toY) const;
+    void swapCells(int x, int y, int toX, int toY);
     bool tryMove(int x, int y, int toX, int toY);
+    bool tryFlowSideways(int x, int y, int dir, int reach);
 
     void updatePowder(int x, int y);
+    void updateLiquid(int x, int y);
 
     uint32_t random();
     bool coinFlip() { return random() & 1u; }

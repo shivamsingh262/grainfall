@@ -17,6 +17,14 @@ void mouseToGrid(const Grid& grid, int& outX, int& outY) {
     outY = static_cast<int>(mouse.y * grid.height() / GetScreenHeight());
 }
 
+// Temporary key bindings until the UI milestone: 1-3 pick an element, 0 picks the eraser.
+void handleElementKeys(ElementId& selected) {
+    if (IsKeyPressed(KEY_ONE)) selected = ElementId::Sand;
+    if (IsKeyPressed(KEY_TWO)) selected = ElementId::Water;
+    if (IsKeyPressed(KEY_THREE)) selected = ElementId::Stone;
+    if (IsKeyPressed(KEY_ZERO)) selected = ElementId::Empty;
+}
+
 }  // namespace
 
 int main() {
@@ -27,12 +35,18 @@ int main() {
     {  // scope so the Renderer releases its texture before the window closes
         Grid grid(kGridWidth, kGridHeight);
         Renderer renderer(grid);
+        ElementId selected = ElementId::Sand;
 
         while (!WindowShouldClose()) {
-            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            handleElementKeys(selected);
+
+            // Left button paints the selected element; right button always erases.
+            const bool painting = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+            const bool erasing = IsMouseButtonDown(MOUSE_BUTTON_RIGHT);
+            if (painting || erasing) {
                 int x = 0, y = 0;
                 mouseToGrid(grid, x, y);
-                grid.paintCircle(x, y, kBrushRadius, ElementId::Sand);
+                grid.paintCircle(x, y, kBrushRadius, erasing ? ElementId::Empty : selected);
             }
 
             grid.step();
@@ -42,6 +56,8 @@ int main() {
             const Rectangle screen{0, 0, static_cast<float>(GetScreenWidth()),
                                    static_cast<float>(GetScreenHeight())};
             renderer.draw(grid, screen);
+            const char* name = selected == ElementId::Empty ? "Eraser" : elementDef(selected).name;
+            DrawText(name, 10, 10, 20, RAYWHITE);
             EndDrawing();
         }
     }

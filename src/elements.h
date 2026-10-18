@@ -9,6 +9,8 @@
 enum class ElementId : uint8_t {
     Empty,
     Sand,
+    Water,
+    Stone,
     Count
 };
 
@@ -17,6 +19,7 @@ enum class ElementId : uint8_t {
 enum class Movement : uint8_t {
     None,    // never moves on its own
     Powder,  // falls straight down, otherwise slides off diagonally
+    Liquid,  // like powder, but also flows sideways to level out
 };
 
 // Static description of an element. One row per ElementId.
@@ -25,6 +28,8 @@ struct ElementDef {
     Color color;          // base color
     uint8_t colorJitter;  // max brightness variation per particle (0 = flat color)
     Movement movement;
+    uint8_t density;      // a moving element can push aside liquids lighter than itself
+    uint8_t dispersion;   // liquids: max cells flowed sideways per frame
 };
 
 const ElementDef& elementDef(ElementId id);
