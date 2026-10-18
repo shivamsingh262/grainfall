@@ -27,6 +27,7 @@ add_executable(falling_sand
     src/elements.cpp
     src/grid.cpp
     src/renderer.cpp
+    src/ui.cpp
 )
 target_link_libraries(falling_sand PRIVATE raylib)
 
