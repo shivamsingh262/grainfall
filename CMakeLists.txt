@@ -14,6 +14,9 @@ endif()
 include(FetchContent)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
+if(EMSCRIPTEN)
+    set(PLATFORM Web CACHE STRING "" FORCE)
+endif()
 FetchContent_Declare(
     raylib
     URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
@@ -35,4 +38,15 @@ if(MSVC)
     target_compile_options(grainfall PRIVATE /W4)
 else()
     target_compile_options(grainfall PRIVATE -Wall -Wextra)
+endif()
+
+# --- web build (emcmake cmake -B build-web) ---
+if(EMSCRIPTEN)
+    set_target_properties(grainfall PROPERTIES SUFFIX ".html")
+    target_link_options(grainfall PRIVATE
+        -sUSE_GLFW=3
+        -sALLOW_MEMORY_GROWTH=1
+        --shell-file ${CMAKE_SOURCE_DIR}/web/shell.html
+    )
+    set_property(TARGET grainfall APPEND PROPERTY LINK_DEPENDS ${CMAKE_SOURCE_DIR}/web/shell.html)
 endif()

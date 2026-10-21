@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grainfall</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+    body { display: flex; align-items: center; justify-content: center; }
+    /* Fit the 1280x720 canvas to the page (or iframe) at 16:9; raylib maps mouse coords back. */
+    canvas { display: block; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9;
+             outline: none; cursor: crosshair; image-rendering: pixelated; }
+    #status { position: absolute; color: #aaa; font: 14px system-ui, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="status">Loading…</div>
+  <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+  <script>
+    var canvas = document.getElementById('canvas');
+    // Keyboard shortcuts only reach the canvas once it has focus.
+    canvas.addEventListener('pointerdown', function () { canvas.focus(); });
+    var Module = {
+      canvas: canvas,
+      setStatus: function (text) { document.getElementById('status').textContent = text; },
+      onRuntimeInitialized: function () { document.getElementById('status').remove(); canvas.focus(); }
+    };
+  </script>
+  {{{ SCRIPT }}}
+</body>
+</html>

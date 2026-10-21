@@ -5,10 +5,13 @@
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white)
 [![raylib 5.5](https://img.shields.io/badge/raylib-5.5-black)](https://www.raylib.com/)
 ![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
+[![Live demo](https://img.shields.io/badge/demo-play%20in%20browser-orange)](https://shivamsingh262.github.io/notes/grainfall/)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
 A small falling-sand sandbox written in C++20 with [raylib](https://www.raylib.com/).
 Pour sand, flood it with water, build stone walls, and set wooden forests on fire.
+
+**[▶ Play it in your browser](https://shivamsingh262.github.io/notes/grainfall/)**, no install needed (WebAssembly build).
 
 ![Grainfall: a sand dune, a burning tree and a lake fed by a waterfall](docs/screenshot.png)
 
@@ -46,6 +49,20 @@ pass `--config Release` to `cmake --build` for a fast build.
   - Fedora: `sudo dnf install gcc-c++ cmake libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel mesa-libGL-devel`
 - **macOS**: install the Xcode Command Line Tools (`xcode-select --install`) and CMake (`brew install cmake`).
 - **Windows**: install Visual Studio 2022 with the "Desktop development with C++" workload, which includes CMake.
+
+### Web build
+
+Grainfall also compiles to WebAssembly with [Emscripten](https://emscripten.org/)
+(`brew install emscripten`, or the [emsdk](https://emscripten.org/docs/getting_started/downloads.html)):
+
+```sh
+emcmake cmake -B build-web
+cmake --build build-web
+python3 -m http.server -d build-web 8080   # open http://localhost:8080/grainfall.html
+```
+
+The output is `grainfall.html`, `grainfall.js` and `grainfall.wasm`; serve them from any static host.
+The page template is `web/shell.html`. It scales the canvas to fit its page, so it also works inside an `<iframe>`.
 
 ## Controls
 
@@ -133,11 +150,12 @@ If your element needs behavior that the existing properties can't express:
 
 | File | Purpose |
 |---|---|
-| `src/main.cpp` | Window, main loop, mouse painting |
+| `src/main.cpp` | Window, main loop (native and browser), mouse painting |
 | `src/elements.h/.cpp` | `ElementId`, `ElementDef` and the element table |
 | `src/grid.h/.cpp` | Cell storage and the simulation rules |
 | `src/renderer.h/.cpp` | Grid → pixel buffer → one texture → one draw call |
 | `src/ui.h/.cpp` | Palette, brush size, pause/clear, HUD |
+| `web/shell.html` | Page template for the WebAssembly build |
 
 ## Contributing
 
