@@ -5,13 +5,13 @@
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-00599C?logo=cplusplus&logoColor=white)
 [![raylib 5.5](https://img.shields.io/badge/raylib-5.5-black)](https://www.raylib.com/)
 ![Platforms](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
-[![Live demo](https://img.shields.io/badge/demo-play%20in%20browser-orange)](https://shivamsingh262.github.io/notes/grainfall/)
+[![Live demo](https://img.shields.io/badge/demo-play%20in%20browser-orange)](https://shivamsingh262.com/notes/grainfall/)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
 A small falling-sand sandbox written in C++20 with [raylib](https://www.raylib.com/).
 Pour sand, flood it with water, build stone walls, and set wooden forests on fire.
 
-**[▶ Play it in your browser](https://shivamsingh262.github.io/notes/grainfall/)**, no install needed (WebAssembly build).
+**[▶ Play it in your browser](https://shivamsingh262.com/notes/grainfall/)**, no install needed (WebAssembly build).
 
 ![Grainfall: a sand dune, a burning tree and a lake fed by a waterfall](docs/screenshot.png)
 
